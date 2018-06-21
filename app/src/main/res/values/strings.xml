@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Test1</string>
+    <string name="error_message">No Internet Connection</string>
+</resources>
