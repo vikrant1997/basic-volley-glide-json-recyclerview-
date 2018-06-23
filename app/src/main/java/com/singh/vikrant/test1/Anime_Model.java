@@ -7,15 +7,7 @@ public class Anime_Model {
     public Anime_Model(){
 
     }
-//    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-//            public Anime_Model createFromParcel(Parcel in) {
-//                return new Anime_Model(in);
-//            }
-//
-//        public Anime_Model[] newArray(int size) {
-//            return new Anime_Model[size];
-//        }
-//    };
+
     private String mId;
     private String mTitle;
     private String mReleaseDate;
@@ -34,14 +26,6 @@ public class Anime_Model {
         mPosterUri = posterUri;
     }
 
-//    public Anime_Model(Parcel in) {
-//        mId = in.readString();
-//        mTitle = in.readString();
-//        mReleaseDate = in.readString();
-//        mVoteAverage = in.readString();
-//        mOverview = in.readString();
-//        mPosterUri = (Uri) in.readValue(Movie.class.getClassLoader());
-//    }
 
     public String getTitle() {
         return mTitle;
@@ -64,7 +48,7 @@ public class Anime_Model {
     }
 
     public String getImage_url() {
-        String send="http://image.tmdb.org/t/p/w780/"+image_url;
+        String send="http://image.tmdb.org/t/p/w500/"+image_url;
         return send;
     }
 
@@ -100,18 +84,5 @@ public class Anime_Model {
         mPosterUri = posterUri;
     }
 
-//    @Override
-//    public int describeContents() {
-//        return 0;
-//    }
-//
-//    @Override
-//    public void writeToParcel(Parcel dest, int i) {
-//        dest.writeString(mId);
-//        dest.writeString(mTitle);
-//        dest.writeString(mReleaseDate);
-//        dest.writeString(mVoteAverage);
-//        dest.writeString(mOverview);
-//        dest.writeValue(mPosterUri);
-//    }
+
 }

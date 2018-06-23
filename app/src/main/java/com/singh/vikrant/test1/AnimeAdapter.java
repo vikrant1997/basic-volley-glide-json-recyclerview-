@@ -31,8 +31,15 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.NumberViewHo
     public AnimeAdapter(Context mContext, List list) {
        this.mContext=mContext;
        this.mListItems=list;
-       options=new RequestOptions().centerCrop().placeholder(R.drawable.ic_launcher_foreground).error(R.drawable.ic_launcher_foreground);
+       options=new RequestOptions().fitCenter().centerCrop().placeholder(R.drawable.ic_launcher_foreground).error(R.drawable.ic_launcher_foreground);
     }
+
+
+        public void remove(List<Anime_Model> item) {
+            int position = mListItems.indexOf(item);
+            mListItems.remove(position);
+            notifyItemRemoved(position);
+        }
 
     /*
      * This gets called when each new ViewHolder is created. This happens when the RecyclerView
@@ -56,6 +63,7 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.NumberViewHo
 
         holder.mTitle.setText(mListItems.get(position).getTitle());
         Glide.with(mContext).load(mListItems.get(position).getImage_url()).apply(options).into(holder.mPosterView);
+
 
 //        Glide.with(mContext).load("http://image.tmdb.org/t/p/w780/"+holder.mItem.getPosterUri());
 //               // .dontTransform().into(holder.mPosterView);
