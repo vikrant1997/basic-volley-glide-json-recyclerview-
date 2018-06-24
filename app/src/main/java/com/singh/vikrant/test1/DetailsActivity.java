@@ -28,9 +28,9 @@ public class DetailsActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.details_activity);
-        android.support.v7.app.ActionBar actionBar=getSupportActionBar();
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        //android.support.v7.app.ActionBar actionBar=getSupportActionBar();
+        //actionBar.setHomeButtonEnabled(true);
+       // actionBar.setDisplayHomeAsUpEnabled(true);
        // getActionBar().setDisplayHomeAsUpEnabled(true);
 
         mPoster=(ImageView)findViewById(R.id.Detail_photo);

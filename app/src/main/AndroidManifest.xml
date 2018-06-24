@@ -25,17 +25,18 @@
         </activity>
         <activity android:name=".DetailsActivity"
             android:label="Details"
-            android:parentActivityName="com.singh.vikrant.test1.MainActivity"
             android:launchMode="singleTop">
+            <!--android:parentActivityName="com.singh.vikrant.test1.MainActivity"-->
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
-            >
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
 
-                android:value="com.singh.vikrant.test1.MainActivity" />
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <!--<meta-data-->
+                <!--android:name="android.support.PARENT_ACTIVITY"></meta-data>-->
+
+                <!--android:value="com.singh.vikrant.test1.MainActivity" />-->
         </activity>
     </application>
 

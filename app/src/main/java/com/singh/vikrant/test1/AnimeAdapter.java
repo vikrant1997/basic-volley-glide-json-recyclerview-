@@ -23,6 +23,8 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.NumberViewHo
     private static final String TAG = AnimeAdapter.class.getSimpleName();
     final private ListItemClickListener mOnClickListener;
 
+
+
     private List<Anime_Model> mListItems;
 
     public interface ListItemClickListener {
@@ -47,10 +49,6 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.NumberViewHo
             notifyItemRemoved(position);
         }
 
-    /*
-     * This gets called when each new ViewHolder is created. This happens when the RecyclerView
-     * is laid out. Enough ViewHolders will be created to fill the screen and allow for scrolling.*
-     */
     @Override
     public NumberViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         Context context = viewGroup.getContext();
@@ -71,10 +69,13 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.NumberViewHo
         Glide.with(mContext).load(mListItems.get(position).getImage_url()).apply(options).into(holder.mPosterView);
 
 
-//        Glide.with(mContext).load("http://image.tmdb.org/t/p/w780/"+holder.mItem.getPosterUri());
-//               // .dontTransform().into(holder.mPosterView);
+//        holder.mView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
 
-       // holder.mTitle.setText(holder.mItem.getTitle());
     }
 
     @Override
@@ -116,10 +117,11 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.NumberViewHo
             itemView.setOnClickListener(this);
         }
 
+
         @Override
         public void onClick(View v) {
-            int clickePosition=getAdapterPosition();
-            mOnClickListener.onListItemClick(clickePosition);
+            int clickedPosition=getAdapterPosition();
+            mOnClickListener.onListItemClick(clickedPosition);
         }
     }
 //
