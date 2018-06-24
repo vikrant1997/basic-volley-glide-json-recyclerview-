@@ -1,6 +1,7 @@
 package com.singh.vikrant.test1;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 
 import java.util.List;
 
@@ -18,7 +21,7 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.NumberViewHo
     RequestOptions options;
     private Context mContext;
     private static final String TAG = AnimeAdapter.class.getSimpleName();
-   // final private ListItemClickListener mOnClickListener;
+    final private ListItemClickListener mOnClickListener;
 
     private List<Anime_Model> mListItems;
 
@@ -28,10 +31,13 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.NumberViewHo
 
     // COMPLETED (4) Add a ListItemClickListener as a parameter to the constructor and store it in mOnClickListener
 
-    public AnimeAdapter(Context mContext, List list) {
+    public AnimeAdapter(Context mContext, List list,ListItemClickListener listener) {
+        mOnClickListener=listener;
        this.mContext=mContext;
        this.mListItems=list;
        options=new RequestOptions().fitCenter().centerCrop().placeholder(R.drawable.ic_launcher_foreground).error(R.drawable.ic_launcher_foreground);
+      // options.format(DecodeFormat.PREFER_RGB_565);
+
     }
 
 
@@ -81,7 +87,7 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.NumberViewHo
     /**
      * Cache of the children views for a list item.
      */
-    class NumberViewHolder extends RecyclerView.ViewHolder {
+    class NumberViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         //    // Will display the position in the list, ie 0 through getItemCount() - 1
 //    TextView listItemNumberView;
 //    // Will display which ViewHolder is displaying this data
@@ -107,11 +113,21 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.NumberViewHo
             mView = itemView;
             mPosterView = (ImageView) itemView.findViewById(R.id.poster);
             mTitle = (TextView) itemView.findViewById(R.id.title);
+            itemView.setOnClickListener(this);
         }
 
-
-
+        @Override
+        public void onClick(View v) {
+            int clickePosition=getAdapterPosition();
+            mOnClickListener.onListItemClick(clickePosition);
+        }
     }
+//
+//    @Override
+//    public void onViewRecycled(@NonNull NumberViewHolder holder) {
+//       // super.onViewRecycled(holder);
+//       Glide.with(holder.mPosterView).clear(holder.mPosterView);
+//    }
 
-        }
+}
 
