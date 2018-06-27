@@ -21,7 +21,8 @@
         android:layout_marginRight="15dp"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:src="@mipmap/star2"
+        android:id="@+id/starImage"
+        android:src="@mipmap/star_empty"
         android:layout_alignBottom="@id/Detail_photo"
         android:layout_alignParentRight="true"/>
 </RelativeLayout>

@@ -1,7 +1,7 @@
 package com.singh.vikrant.test1;
 
+import android.app.LauncherActivity;
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,9 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
+import com.singh.vikrant.test1.database.Anime_Model;
 
 import java.util.List;
 
@@ -42,7 +41,14 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.NumberViewHo
 
     }
 
+    public void setTasks(List<Anime_Model> taskEntries) {
+        mListItems = taskEntries;
+        notifyDataSetChanged();
+    }
 
+    public void getTaskStarValue(List<Anime_Model> taskEntries){
+
+    }
         public void remove(List<Anime_Model> item) {
             int position = mListItems.indexOf(item);
             mListItems.remove(position);
