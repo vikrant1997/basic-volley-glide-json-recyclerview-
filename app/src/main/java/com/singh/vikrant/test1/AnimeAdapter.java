@@ -1,6 +1,5 @@
 package com.singh.vikrant.test1;
 
-import android.app.LauncherActivity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,7 +20,6 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.NumberViewHo
     private Context mContext;
     private static final String TAG = AnimeAdapter.class.getSimpleName();
     final private ListItemClickListener mOnClickListener;
-
 
 
     private List<Anime_Model> mListItems;

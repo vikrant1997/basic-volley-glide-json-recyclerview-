@@ -25,7 +25,9 @@ public class Anime_Model {
     private String mReleaseDate;
     private String mVoteAverage;
     private String mOverview;
-@Ignore    private Uri mPosterUri;
+@Ignore   private Uri mPosterUri;
+    @ColumnInfo(name="IMAGE_PATH")
+    private String ImagePath;
     private String image_url;
    @Ignore private int star=0;
 
@@ -49,15 +51,23 @@ public class Anime_Model {
 //     star=0;
 //    }
 
-    public Anime_Model(String mId,String title,String overview,int star){
+    public Anime_Model(String mId,String title,String overview,int star,String ImagePath){
         this.mId=mId;
         mTitle=title;
         mOverview=overview;
        // mPosterUri=posterUri;
         this.star=star;
+        this.ImagePath=ImagePath;
         setStar(star);
+        //setImagePath(ImagePath);
     }
 
+    public String getImagePath(){
+        return ImagePath;
+    }
+    public void setImagePath(String image_url){
+        this.ImagePath=ImagePath;
+    }
     public int getmIdNext(){
         return mIdNext;
     }
@@ -88,8 +98,8 @@ public class Anime_Model {
 
     public String getImage_url() {
         String send="http://image.tmdb.org/t/p/w500/"+image_url;
-        return send;
-    }
+        return send;}
+
 
     public void setImage_url(String image_url) {
         this.image_url = image_url;

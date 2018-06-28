@@ -27,6 +27,7 @@ import com.singh.vikrant.test1.Constants;
 import com.singh.vikrant.test1.DetailsActivity;
 import com.singh.vikrant.test1.R;
 import com.singh.vikrant.test1.database.Anime_Model;
+import com.singh.vikrant.test1.database.AppDatabase;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,13 +40,18 @@ public class Top_Rated_Fragment extends Fragment implements AnimeAdapter.ListIte
 
     private RecyclerView mRecyclerView;
     private LinearLayoutManager linearLayoutManager;
+   // private List<Anime_Model> animeList;
     private List<Anime_Model> animeListTop;
     private TextView mErrorMessageDisplay;
     private AnimeAdapter mAnimeAdapterTop;
     private ProgressBar mLoadingIndicator;
-    private String url = "https://api.themoviedb.org/3/movie/popular?api_key=6256134f8d005821fcb0ca17a719cd85";
+    private String url = "https://api.themoviedb.org/3/movie/top_rated?api_key=6256134f8d005821fcb0ca17a719cd85";
     private String nexturl;
     private Context mContext;
+    private int star;
+
+    private AppDatabase mDb;
+
     public Top_Rated_Fragment(){
 
     }
@@ -72,7 +78,7 @@ public class Top_Rated_Fragment extends Fragment implements AnimeAdapter.ListIte
         mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_loading_indicator);
 
         mErrorMessageDisplay = (TextView) view.findViewById(R.id.tv_error_message_display_top);
-        mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_loading_indicator_top);
+//        mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_loading_indicator_top);
         mErrorMessageDisplay.setVisibility(View.INVISIBLE);
         mContext=getActivity();
 
@@ -85,6 +91,7 @@ public class Top_Rated_Fragment extends Fragment implements AnimeAdapter.ListIte
         final ProgressDialog progressDialog = new ProgressDialog(mContext);
         progressDialog.setMessage("Loading...");
         progressDialog.show();
+        mDb = AppDatabase.getInstance(getActivity());
 
         for (int i = 1; i <= 5; i++) {
             String num = String.valueOf(i);
@@ -122,7 +129,7 @@ public class Top_Rated_Fragment extends Fragment implements AnimeAdapter.ListIte
                         progressDialog.dismiss();
                     }
 
-                    Toast.makeText(mContext, "Size of Liste " + String.valueOf(animeListTop.size()), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(mContext, "Size of Liste " + String.valueOf(animeListTop.size()), Toast.LENGTH_SHORT).show();
                     // Toast.makeText(MainActivity.this,animeListTop.get(1).toString(),Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();
                     setAnimeadapter(animeListTop);
@@ -137,7 +144,7 @@ public class Top_Rated_Fragment extends Fragment implements AnimeAdapter.ListIte
                     Log.e("Volley", error.toString());
                     progressDialog.dismiss();
 
-                    mLoadingIndicator.setVisibility(View.INVISIBLE);
+//                    mLoadingIndicator.setVisibility(View.INVISIBLE);
                     mErrorMessageDisplay.setVisibility(View.VISIBLE);
                 }
             });
@@ -169,13 +176,24 @@ public class Top_Rated_Fragment extends Fragment implements AnimeAdapter.ListIte
     @Override
     public void onListItemClick(int clickedItemIndex) {
         String msg=String.valueOf(clickedItemIndex);
-        Anime_Model obj= animeListTop.get(clickedItemIndex);
-        Toast.makeText(mContext,"Hello",Toast.LENGTH_SHORT).show();
+        Anime_Model obj=animeListTop.get(clickedItemIndex);
+
+        String starValue;
+
+        starValue=mDb.taskDao().loadStarValue(obj.getTitle());
+        if(starValue!=null){
+            starValue="1";
+        }else{
+            starValue=Integer.toString(obj.getStarValue());
+        }
+        //Toast.makeText(getActivity(),starValue,Toast.LENGTH_SHORT).show();
 
         Intent send=new Intent(mContext,DetailsActivity.class);
         send.putExtra("title",obj.getTitle());
         send.putExtra("poster",obj.getImage_url());
         send.putExtra("summary",obj.getOverview());
+        send.putExtra("starValue",starValue);
+        send.putExtra("id",obj.getId());
         startActivity(send);
     }
 

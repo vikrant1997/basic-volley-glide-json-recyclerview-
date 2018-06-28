@@ -21,6 +21,12 @@ public interface TaskDao {
     @Query("SELECT ID FROM task where TITLE=:animeTitle")
     String loadStarValue(String animeTitle);
 
+    @Query("SELECT IMAGE_PATH FROM task where TITLE=:animeTitle")
+    String getPath(String animeTitle);
+
+    @Query("DELETE FROM task where TITLE=:animeTitle")
+    void delteByTitle(String animeTitle);
+
     @Insert
     void insertTask(Anime_Model taskEntry);
 
@@ -29,4 +35,7 @@ public interface TaskDao {
 
     @Delete
     void deleteTask(Anime_Model taskEntry);
+
+
+
 }

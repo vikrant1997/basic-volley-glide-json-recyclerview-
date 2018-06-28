@@ -78,6 +78,7 @@ public class PopularFragment extends Fragment implements AnimeAdapter.ListItemCl
 
             mErrorMessageDisplay = (TextView) view.findViewById(R.id.tv_error_message_display);
             mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_loading_indicator);
+
             mErrorMessageDisplay.setVisibility(View.INVISIBLE);
             mContext=getActivity();
 
@@ -147,7 +148,7 @@ public class PopularFragment extends Fragment implements AnimeAdapter.ListItemCl
                         Log.e("Volley", error.toString());
                         progressDialog.dismiss();
 
-                        mLoadingIndicator.setVisibility(View.INVISIBLE);
+//                        mLoadingIndicator.setVisibility(View.INVISIBLE);
                         mErrorMessageDisplay.setVisibility(View.VISIBLE);
                     }
                 });
@@ -186,7 +187,7 @@ public class PopularFragment extends Fragment implements AnimeAdapter.ListItemCl
             }else{
                starValue=Integer.toString(obj.getStarValue());
             }
-            Toast.makeText(getActivity(),starValue,Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getActivity(),starValue,Toast.LENGTH_SHORT).show();
 
             Intent send=new Intent(mContext,DetailsActivity.class);
             send.putExtra("title",obj.getTitle());

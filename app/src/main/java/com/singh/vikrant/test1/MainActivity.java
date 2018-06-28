@@ -46,4 +46,5 @@ public class MainActivity extends AppCompatActivity {
         int limit = (adapter.getCount() > 1 ? adapter.getCount() - 1 : 1);
         viewPager.setOffscreenPageLimit(limit);
     }
+
     }
