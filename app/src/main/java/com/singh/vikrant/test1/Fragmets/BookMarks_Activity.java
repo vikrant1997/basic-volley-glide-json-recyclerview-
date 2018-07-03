@@ -1,5 +1,7 @@
 package com.singh.vikrant.test1.Fragmets;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,15 +10,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.singh.vikrant.test1.AnimeAdapter;
 import com.singh.vikrant.test1.BookMarksAdapter;
 import com.singh.vikrant.test1.DetailsActivity;
 import com.singh.vikrant.test1.R;
@@ -28,7 +27,6 @@ import java.util.List;
 
 public class BookMarks_Activity extends Fragment implements BookMarksAdapter.ListItemClickListener {
 
-
     private RecyclerView mRecyclerView;
     private LinearLayoutManager linearLayoutManager;
     private List<Anime_Model> animeList;
@@ -37,6 +35,7 @@ public class BookMarks_Activity extends Fragment implements BookMarksAdapter.Lis
     private TextView mErrorMessageDisplay;
     private Context mContext;
     private AppDatabase mDb;
+    private int mStar;
 
     @Override
     public void setRetainInstance(boolean retain) {
@@ -46,7 +45,7 @@ public class BookMarks_Activity extends Fragment implements BookMarksAdapter.Lis
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View root=inflater.inflate(R.layout.bookmarks_activity,null);
+        View root=inflater.inflate(R.layout.popular_acitivity,null);
         return root;
     }
 
@@ -61,25 +60,26 @@ public class BookMarks_Activity extends Fragment implements BookMarksAdapter.Lis
         mContext=getActivity();
         mDb = AppDatabase.getInstance(getActivity());
 
-
-
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setHasFixedSize(true);
 
         mAnimeAdapter = new BookMarksAdapter(mContext, animeList,this);
 
         mRecyclerView.setAdapter(mAnimeAdapter);
+        retrieveTasks();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        // COMPLETED (3) Call the adapter's setTasks method using the result
-        // of the loadAllTasks method from the taskDao
-        animeList = mDb.taskDao().loadAllTasks();
-       mAnimeAdapter.setTasks(mDb.taskDao().loadAllTasks());
+    private void retrieveTasks() {
+        final LiveData<List<Anime_Model>> tasks = mDb.taskDao().loadAllTasks();
+        tasks.observe(this, new Observer<List<Anime_Model>>() {
+            @Override
+            public void onChanged(@Nullable List<Anime_Model> taskEntries) {
+                animeList=taskEntries;
+                mAnimeAdapter.setTasks(taskEntries);
+            }
+        });
 
-    }
+   }
 
     @Override
     public void onListItemClick(int clickedItemIndex) {
@@ -88,22 +88,13 @@ public class BookMarks_Activity extends Fragment implements BookMarksAdapter.Lis
 
         String starValue;
 
-        starValue=mDb.taskDao().loadStarValue(obj.getTitle());
-        if(starValue!=null){
-            starValue="1";
-        }else{
-            starValue=Integer.toString(obj.getStarValue());
-        }
-       // Toast.makeText(getActivity(),starValue,Toast.LENGTH_SHORT).show();
+        //starValue=loadStar(obj.getTitle());
+        starValue=obj.getStarValue();
+
     String path;
 
-            path = mDb.taskDao().getPath(animeList.get(clickedItemIndex).getTitle());
-            Log.d("TEENTEN",path);
-
-          //  Glide.with(mContext).load(path).apply(options).into(holder.mPosterView);
-
-
-
+        //    path = mDb.taskDao().getPath(animeList.get(clickedItemIndex).getTitle());
+         path = obj.getImagePath();
 
 
         Intent send=new Intent(mContext,DetailsActivity.class);

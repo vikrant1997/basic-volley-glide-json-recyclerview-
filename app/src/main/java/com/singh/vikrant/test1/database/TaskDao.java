@@ -1,5 +1,6 @@
 package com.singh.vikrant.test1.database;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -15,11 +16,11 @@ import java.util.List;
 public interface TaskDao {
 
     @Query("SELECT * FROM task")
-    List<Anime_Model> loadAllTasks();
+    LiveData<List<Anime_Model>> loadAllTasks();
 
 
-    @Query("SELECT ID FROM task where TITLE=:animeTitle")
-    String loadStarValue(String animeTitle);
+    @Query("SELECT star FROM task where ID=:mId")
+    String loadStarValue(int mId);
 
     @Query("SELECT IMAGE_PATH FROM task where TITLE=:animeTitle")
     String getPath(String animeTitle);

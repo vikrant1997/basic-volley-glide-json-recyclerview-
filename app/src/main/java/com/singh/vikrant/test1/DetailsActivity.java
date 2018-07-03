@@ -34,6 +34,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.singh.vikrant.test1.database.Anime_Model;
 import com.singh.vikrant.test1.database.AppDatabase;
+import com.singh.vikrant.test1.database.AppExecutors;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -51,7 +52,7 @@ public class DetailsActivity extends AppCompatActivity {
     private String mSummaryString;
     private ImageView mStar;
     private int mStarvalue;
-    private String mId;
+    private int mId;
     private AppDatabase mDb;
     private String saveImage;
     private String dataString;
@@ -63,13 +64,9 @@ public class DetailsActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.details_activity);
-//        android.support.v7.app.ActionBar actionBar=getSupportActionBar();
-//        actionBar.setHomeButtonEnabled(true);
-//         actionBar.setDisplayHomeAsUpEnabled(true);
-//         getActionBar().setDisplayHomeAsUpEnabled(true);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        // Sets the Toolbar to act as the ActionBar for this Activity window.
-        // Make sure the toolbar exists in the activity and is not null
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Details");
 
@@ -84,47 +81,37 @@ public class DetailsActivity extends AppCompatActivity {
         mImageUrl = fetch.getStringExtra("poster");
         mTitleString = fetch.getStringExtra("title");
         mSummaryString = fetch.getStringExtra("summary");
-        mStarvalue = Integer.parseInt(fetch.getStringExtra("starValue"));
 
-        mId = fetch.getStringExtra("id");
+        mStarvalue=Integer.parseInt(fetch.getStringExtra("starValue"));
+        Log.d("STAR",String.valueOf(mStarvalue));
+        mId = fetch.getIntExtra("id",0);
 
         Glide.with(getApplicationContext()).load(mImageUrl).apply(options).into(mPoster);
         mTitle.setText(mTitleString);
         mSummary.setText(mSummaryString);
-        if (mStarvalue == 1) {
-
+        if (mStarvalue==1) {
             mStar.setImageResource(R.mipmap.star_full);
-
         }
 
         mStar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mStarvalue == 1) {
+                if (mStarvalue==1) {
                     //true Star1 is full
                     mStarvalue = 0;
-                    mDb.taskDao().delteByTitle(mTitleString);
+                   // mDb.taskDao().delteByTitle(mTitleString);
+                    deleteItem(mTitleString);
                     mStar.setImageResource(R.mipmap.star_empty);
                 } else {
-                    mStarvalue = 1;
+                    mStarvalue =1;
                     mStar.setImageResource(R.mipmap.star_full);
                      get();
 
-//                    Anime_Model taskEntry = new Anime_Model(mId, mTitleString, mSummaryString, mStarvalue, dataString);
-//                    // COMPLETED (9) Use the taskDao in the AppDatabase variable to insert the taskEntry
-//                    if (dataString != null) {
-//                        Log.d("datastring", dataString);
-//                    }
-//
-//                    mDb.taskDao().insertTask(taskEntry);
-//
-//                    mStar.setImageResource(R.mipmap.star_full);
                 }
             }
         });
 
         mDb = AppDatabase.getInstance(getApplicationContext());
-
 
     }
         @Override
@@ -150,14 +137,15 @@ public class DetailsActivity extends AppCompatActivity {
 
                             saveImage = saveImageToInternalStorage(bitmap);
                             Log.d("saveImage", saveImage);
-                            Anime_Model taskEntry = new Anime_Model(mId, mTitleString, mSummaryString, mStarvalue, saveImage);
-                            // COMPLETED (9) Use the taskDao in the AppDatabase variable to insert the taskEntry
+                            Anime_Model taskEntry = new Anime_Model(mId, mTitleString, mSummaryString, Integer.toString(mStarvalue), saveImage);
+                            Log.d("starValue", String.valueOf(mStarvalue));
                             if (saveImage != null) {
                                 Log.d("saveImage", saveImage);
                             }
 
-                            mDb.taskDao().insertTask(taskEntry);
-
+                           // mDb.taskDao().insertTask(taskEntry);
+                            insertItem(taskEntry);
+                            finish();
 
                         }
                     }, 0, 0, null, null,
@@ -177,7 +165,7 @@ public class DetailsActivity extends AppCompatActivity {
             // path to /data/data/yourapp/app_data/imageDir
             File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
             // Create imageDir
-            File mypath = new File(directory, mTitleString+mId+".jpg");
+            File mypath = new File(directory, mId+".jpg");
 
             FileOutputStream fos = null;
             try {
@@ -195,6 +183,28 @@ public class DetailsActivity extends AppCompatActivity {
             }
             Log.d("pathname", mypath.getAbsolutePath());
             return (mypath.getAbsolutePath());
+        }
+
+        public void insertItem(final Anime_Model taskAnime){
+            AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                @Override
+                public void run() {
+
+                        mDb.taskDao().insertTask(taskAnime);
+
+
+
+                }
+            });
+        }
+        public void deleteItem(String name){
+            AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                @Override
+                public void run() {
+                    mDb.taskDao().delteByTitle(mTitleString);
+                    finish();
+                }
+            });
         }
 
     }

@@ -12,69 +12,41 @@ import android.widget.Toast;
 @Entity(tableName = "task")
 public class Anime_Model {
 
-
+    @Ignore
     public Anime_Model(){
     }
 
-   @NonNull @PrimaryKey(autoGenerate =false)
+   @NonNull @PrimaryKey(autoGenerate =true)
    @ColumnInfo(name = "ID")
-    protected String mId;
-    protected int mIdNext;
+    protected int mId;
     @ColumnInfo(name = "TITLE")
     private String mTitle;
     private String mReleaseDate;
     private String mVoteAverage;
     private String mOverview;
-@Ignore   private Uri mPosterUri;
+    @Ignore   private Uri mPosterUri;
     @ColumnInfo(name="IMAGE_PATH")
     private String ImagePath;
     private String image_url;
-   @Ignore private int star=0;
 
-   @Ignore private AppDatabase mDb;
+    public String star="0";
 
-    @Ignore
-    public Anime_Model(String id, String title, String releaseDate, String voteAverage, String
-            overview, Uri posterUri) {
 
-        mId = id;
-        mTitle = title;
-        mReleaseDate = releaseDate;
-        mVoteAverage = voteAverage;
-        mOverview = overview;
-        mPosterUri = posterUri;
-    }
-//    @Ignore
-//    public Anime_Model(String title,String overview){
-//     mTitle=title;
-//     mOverview=overview;
-//     star=0;
-//    }
-
-    public Anime_Model(String mId,String title,String overview,int star,String ImagePath){
+    public Anime_Model(int mId,String title,String overview,String star,String ImagePath){
         this.mId=mId;
         mTitle=title;
         mOverview=overview;
-       // mPosterUri=posterUri;
         this.star=star;
         this.ImagePath=ImagePath;
-        setStar(star);
-        //setImagePath(ImagePath);
     }
 
     public String getImagePath(){
         return ImagePath;
     }
-    public void setImagePath(String image_url){
+    public void setImagePath(String ImagePath){
         this.ImagePath=ImagePath;
     }
-    public int getmIdNext(){
-        return mIdNext;
-    }
-    public int setmIdNext(int mIdNext){
-        this.mIdNext=mIdNext;
-        return mIdNext;
-    }
+
 
     public String getTitle() {
         return mTitle;
@@ -84,11 +56,11 @@ public class Anime_Model {
         mTitle = title;
     }
 
-    public String getId() {
+    public int getId() {
         return mId;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         mId = id;
     }
 
@@ -125,20 +97,11 @@ public class Anime_Model {
         mOverview = overview;
     }
 
-//    public Uri getPosterUri() {
-//        return mPosterUri;
-//    }
-
-//    public void setPosterUri(Uri posterUri) {
-//        mPosterUri = posterUri;
-//    }
-    public int getStarValue(){
+    public String getStarValue(){
          return star;
-
         }
 
-    public void setStar(int star) {
-
+    public void setStar(String star) {
             this.star = star;
 
     }

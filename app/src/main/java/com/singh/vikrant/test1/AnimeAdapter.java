@@ -1,6 +1,7 @@
 package com.singh.vikrant.test1;
 
 import android.content.Context;
+import android.graphics.Movie;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,13 +15,16 @@ import com.singh.vikrant.test1.database.Anime_Model;
 
 import java.util.List;
 
-public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.NumberViewHolder> {
+public class AnimeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     RequestOptions options;
     private Context mContext;
     private static final String TAG = AnimeAdapter.class.getSimpleName();
     final private ListItemClickListener mOnClickListener;
 
+    private static final int ITEM = 0;
+    private static final int LOADING = 1;
+    private boolean isLoadingAdded = false;
 
     private List<Anime_Model> mListItems;
 
@@ -28,14 +32,12 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.NumberViewHo
         void onListItemClick(int clickedItemIndex);
     }
 
-    // COMPLETED (4) Add a ListItemClickListener as a parameter to the constructor and store it in mOnClickListener
 
     public AnimeAdapter(Context mContext, List list,ListItemClickListener listener) {
         mOnClickListener=listener;
        this.mContext=mContext;
        this.mListItems=list;
        options=new RequestOptions().fitCenter().centerCrop().placeholder(R.drawable.ic_launcher_foreground).error(R.drawable.ic_launcher_foreground);
-      // options.format(DecodeFormat.PREFER_RGB_565);
 
     }
 
@@ -54,38 +56,106 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.NumberViewHo
         }
 
     @Override
-    public NumberViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         Context context = viewGroup.getContext();
         int layoutIdForListItem = R.layout.item_layout;
         LayoutInflater inflater = LayoutInflater.from(context);
-        //boolean shouldAttachToParentImmediately = false;
 
-        View view = inflater.inflate(layoutIdForListItem, viewGroup, false);
+        if(viewType==ITEM){
+            View view = inflater.inflate(layoutIdForListItem, viewGroup, false);
 
+            return new NumberViewHolder(view);
+        }else {
+            View v2 = inflater.inflate(R.layout.item_progress, viewGroup, false);
+            LoadingVH loading = new LoadingVH(v2);
+            return loading;
+        }
 
-        return new NumberViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(NumberViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        switch (getItemViewType(position)) {
+            case ITEM:
+                NumberViewHolder animeHolder = (NumberViewHolder) holder;
 
-        holder.mTitle.setText(mListItems.get(position).getTitle());
-        Glide.with(mContext).load(mListItems.get(position).getImage_url()).apply(options).into(holder.mPosterView);
-
-
-//        holder.mView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
+                animeHolder.mTitle.setText(mListItems.get(position).getTitle());
+                Glide.with(mContext).load(mListItems.get(position).getImage_url()).apply(options).into(animeHolder.mPosterView);
+                break;
+            case LOADING:
+//                Do nothing
+                break;
+        }
 
     }
+
+
+    @Override
+    public int getItemViewType(int position) {
+        return (position == mListItems.size() - 1 && isLoadingAdded) ? LOADING : ITEM;
+    }
+
 
     @Override
     public int getItemCount() {
-        return mListItems.size();
+        return mListItems==null?0:mListItems.size();
     }
+
+    //--------------------------HELPERS------------------
+
+    public void add(Anime_Model mc) {
+        mListItems.add(mc);
+        notifyItemInserted(mListItems.size() - 1);
+    }
+
+    public void addAll(List<Anime_Model> mcList) {
+        for (Anime_Model mc : mcList) {
+            add(mc);
+        }
+    }
+
+    public void remove(Anime_Model city) {
+        int position = mListItems.indexOf(city);
+        if (position > -1) {
+            mListItems.remove(position);
+            notifyItemRemoved(position);
+        }
+    }
+
+    public void clear() {
+        isLoadingAdded = false;
+        while (getItemCount() > 0) {
+            remove(getItem(0));
+        }
+    }
+
+    public boolean isEmpty() {
+        return getItemCount() == 0;
+    }
+
+
+    public void addLoadingFooter() {
+        isLoadingAdded = true;
+        add(new Anime_Model());
+    }
+
+    public void removeLoadingFooter() {
+        isLoadingAdded = false;
+
+        int position = mListItems.size() - 1;
+        Anime_Model item = getItem(position);
+
+        if (item != null) {
+            mListItems.remove(position);
+            notifyItemRemoved(position);
+        }
+    }
+
+    public Anime_Model getItem(int position) {
+        return mListItems.get(position);
+    }
+
+    //--------------------------HELPERS------------------
 
 // COMPLETED (5) Implement OnClickListener in the NumberViewHolder class
 
@@ -93,12 +163,7 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.NumberViewHo
      * Cache of the children views for a list item.
      */
     class NumberViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        //    // Will display the position in the list, ie 0 through getItemCount() - 1
-//    TextView listItemNumberView;
-//    // Will display which ViewHolder is displaying this data
-//    TextView viewHolderIndex;
-//
-//    /**
+
         public Anime_Model mItem;
 
         public final View mView;
@@ -128,12 +193,14 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.NumberViewHo
             mOnClickListener.onListItemClick(clickedPosition);
         }
     }
-//
-//    @Override
-//    public void onViewRecycled(@NonNull NumberViewHolder holder) {
-//       // super.onViewRecycled(holder);
-//       Glide.with(holder.mPosterView).clear(holder.mPosterView);
-//    }
+
+    protected class LoadingVH extends RecyclerView.ViewHolder {
+
+        public LoadingVH(View itemView) {
+            super(itemView);
+        }
+    }
+
 
 }
 

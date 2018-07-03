@@ -6,10 +6,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.singh.vikrant.test1.Fragmets.BookMarks_Activity;
-import com.singh.vikrant.test1.Fragmets.PopularFragment;
-import com.singh.vikrant.test1.Fragmets.Top_Rated_Fragment;
-
 public class Fragment_Adapter extends FragmentPagerAdapter {
     private Context mContext;
 

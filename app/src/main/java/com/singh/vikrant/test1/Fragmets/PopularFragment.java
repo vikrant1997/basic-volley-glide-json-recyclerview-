@@ -1,5 +1,8 @@
 package com.singh.vikrant.test1.Fragmets;
 
+import android.arch.lifecycle.LiveData;
+import android.graphics.Movie;
+import android.net.ConnectivityManager;
 import android.support.v4.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -28,6 +31,7 @@ import com.singh.vikrant.test1.DetailsActivity;
 import com.singh.vikrant.test1.R;
 import com.singh.vikrant.test1.database.Anime_Model;
 import com.singh.vikrant.test1.database.AppDatabase;
+import com.singh.vikrant.test1.database.AppExecutors;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,7 +52,14 @@ public class PopularFragment extends Fragment implements AnimeAdapter.ListItemCl
         private String url = "https://api.themoviedb.org/3/movie/popular?api_key=6256134f8d005821fcb0ca17a719cd85";
         private String nexturl;
         private Context mContext;
-        private int star;
+        private int loadId;
+
+    private static final int PAGE_START = 0;
+    private boolean isLoading = false;
+    private boolean isLastPage = false;
+    private int TOTAL_PAGES = 5;
+    private int currentPage = PAGE_START;
+     String mStar;
 
     private AppDatabase mDb;
         public PopularFragment(){
@@ -74,10 +85,10 @@ public class PopularFragment extends Fragment implements AnimeAdapter.ListItemCl
             animeList = new ArrayList<>();
             mErrorMessageDisplay = (TextView) view.findViewById(R.id.tv_error_message_display);
             linearLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
-            mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_loading_indicator);
+//            mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_loading_indicator);
 
             mErrorMessageDisplay = (TextView) view.findViewById(R.id.tv_error_message_display);
-            mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_loading_indicator);
+          //  mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_loading_indicator);
 
             mErrorMessageDisplay.setVisibility(View.INVISIBLE);
             mContext=getActivity();
@@ -91,7 +102,7 @@ public class PopularFragment extends Fragment implements AnimeAdapter.ListItemCl
             progressDialog.show();
             mDb = AppDatabase.getInstance(getActivity());
 
-            for (int i = 1; i <= 5; i++) {
+            for (int i = 1; i < 5; i++) {
                 String num = String.valueOf(i);
                 nexturl = url + "&page=" + num;
                 JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
@@ -109,20 +120,12 @@ public class PopularFragment extends Fragment implements AnimeAdapter.ListItemCl
 
                                 JSONObject jsonObject = jsonAnimeArray.getJSONObject(i);
                                 Anime_Model anime = new Anime_Model();
-                                anime.setId(jsonObject.getString(Constants.JSON_ID));
+                                anime.setId(Integer.parseInt(jsonObject.getString(Constants.JSON_ID)));
                                 anime.setTitle(jsonObject.getString(Constants.JSON_TITLE));
                                 anime.setReleaseDate(jsonObject.getString(Constants.JSON_RELEASE_DATE));
                                 anime.setVoteAverage(jsonObject.getString(Constants.JSON_VOTE_AVERAGE));
                                 anime.setOverview(jsonObject.getString(Constants.JSON_OVERVIEW));
                                 anime.setImage_url(jsonObject.getString(Constants.JSON_POSTER_PATH));
-//                                                Uri posterUri = createPosterUri(jsonAnimeArray.getJSONObject(i).getString
-//                                                        (Constants.JSON_POSTER_PATH));
-//                                if(mDb!=null&&(mDb.taskDao().loadStarValue(Constants.JSON_TITLE)==Constants.JSON_ID)){
-//                                    Log.d("XXXXXXXXXXXX","PASSED");
-//                                    anime.setStar(1);
-//                                }else {
-//                                    anime.setStar(0);
-//                                }
 
                                 animeList.add(anime);
 
@@ -133,22 +136,16 @@ public class PopularFragment extends Fragment implements AnimeAdapter.ListItemCl
                             progressDialog.dismiss();
                         }
 
-                        //Toast.makeText(mContext, "Size of Liste " + String.valueOf(animeList.size()), Toast.LENGTH_SHORT).show();
-
                         progressDialog.dismiss();
                         setAnimeadapter(animeList);
 
-
-                        //    adapter.notifyDataSetChanged();
-                        //                               progressDialog.dismiss();
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.e("Volley", error.toString());
+
                         progressDialog.dismiss();
 
-//                        mLoadingIndicator.setVisibility(View.INVISIBLE);
                         mErrorMessageDisplay.setVisibility(View.VISIBLE);
                     }
                 });
@@ -163,40 +160,43 @@ public class PopularFragment extends Fragment implements AnimeAdapter.ListItemCl
 
         public void setAnimeadapter(List<Anime_Model> lst) {
             mErrorMessageDisplay.setVisibility(View.INVISIBLE);
-
-
             mRecyclerView.setLayoutManager(linearLayoutManager);
+
             mRecyclerView.setHasFixedSize(true);
-
             mAnimeAdapter = new AnimeAdapter(mContext, lst,this);
-
             mRecyclerView.setAdapter(mAnimeAdapter);
 
         }
 
         @Override
         public void onListItemClick(int clickedItemIndex) {
-            String msg=String.valueOf(clickedItemIndex);
-            Anime_Model obj=animeList.get(clickedItemIndex);
 
-             String starValue;
+            final Anime_Model obj=animeList.get(clickedItemIndex);
+                 AppExecutors.getInstance().diskIO().execute(new Runnable() {
 
-            starValue=mDb.taskDao().loadStarValue(obj.getTitle());
-            if(starValue!=null){
-                starValue="1";
-            }else{
-               starValue=Integer.toString(obj.getStarValue());
-            }
-            //Toast.makeText(getActivity(),starValue,Toast.LENGTH_SHORT).show();
+                @Override
+                public void run() {
+                    final String task = mDb.taskDao().loadStarValue(obj.getId());
+                    if (task == null) {
+                        mStar="0";
+                    } else {
+                        mStar=task;
+                    }
 
-            Intent send=new Intent(mContext,DetailsActivity.class);
-            send.putExtra("title",obj.getTitle());
-            send.putExtra("poster",obj.getImage_url());
-            send.putExtra("summary",obj.getOverview());
-            send.putExtra("starValue",starValue);
-            send.putExtra("id",obj.getId());
-            startActivity(send);
+                    Intent send=new Intent(mContext,DetailsActivity.class);
+                    send.putExtra("title",obj.getTitle());
+                    send.putExtra("poster",obj.getImage_url());
+                    send.putExtra("summary",obj.getOverview());
+                    send.putExtra("starValue",mStar);
+                    send.putExtra("id",obj.getId());
+                    startActivity(send);
+                }
+
+            });
+
         }
 
-    }
+}
+
+
 
